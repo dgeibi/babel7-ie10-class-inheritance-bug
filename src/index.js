@@ -1,7 +1,7 @@
-const test = () => {
+const test = (name, fn) => {
   class Super {
-    constructor() {
-      this.value = 123;
+    constructor(value) {
+      this.value = value;
     }
 
     static staticMethod() {
@@ -15,21 +15,33 @@ const test = () => {
 
   class Sub extends Super {}
 
-  const a = new Sub();
+  const instance = new Sub(123);
 
   let result;
 
   try {
-    result =
-      Sub.staticMethod() && a.instanceMethod() && a.value === 123
-        ? "ok"
-        : "failed";
+    result = fn({ Super, Sub, instance });
   } catch (e) {
     console.log(e);
     result = e.stack;
   }
 
-  return result;
+  return name + ": " + result;
 };
 
-document.querySelector("#root").innerText = test();
+document.querySelector("#root").innerText = [
+  {
+    name: "Sub.staticMethod()",
+    fn: ({ Sub }) => Sub.staticMethod()
+  },
+  {
+    name: "instance.instanceMethod()",
+    fn: ({ instance }) => instance.instanceMethod()
+  },
+  {
+    name: "instance.value === 123",
+    fn: ({ instance }) => instance.value === 123
+  }
+]
+  .map(({ name, fn }) => test(name, fn))
+  .join("\n\n");

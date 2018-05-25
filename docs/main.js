@@ -91,14 +91,14 @@ __webpack_require__.r(__webpack_exports__);
 
 
 
-var test = function test() {
+var test = function test(name, fn) {
   var Super =
   /*#__PURE__*/
   function () {
-    function Super() {
+    function Super(value) {
       _babel_runtime_helpers_classCallCheck__WEBPACK_IMPORTED_MODULE_3___default()(this, Super);
 
-      this.value = 123;
+      this.value = value;
     }
 
     _babel_runtime_helpers_createClass__WEBPACK_IMPORTED_MODULE_4___default()(Super, [{
@@ -130,20 +130,46 @@ var test = function test() {
     return Sub;
   }(Super);
 
-  var a = new Sub();
+  var instance = new Sub(123);
   var result;
 
   try {
-    result = Sub.staticMethod() && a.instanceMethod() && a.value === 123 ? "ok" : "failed";
+    result = fn({
+      Super: Super,
+      Sub: Sub,
+      instance: instance
+    });
   } catch (e) {
     console.log(e);
     result = e.stack;
   }
 
-  return result;
+  return name + ": " + result;
 };
 
-document.querySelector("#root").innerText = test();
+document.querySelector("#root").innerText = [{
+  name: "Sub.staticMethod()",
+  fn: function fn(_ref) {
+    var Sub = _ref.Sub;
+    return Sub.staticMethod();
+  }
+}, {
+  name: "instance.instanceMethod()",
+  fn: function fn(_ref2) {
+    var instance = _ref2.instance;
+    return instance.instanceMethod();
+  }
+}, {
+  name: "instance.value === 123",
+  fn: function fn(_ref3) {
+    var instance = _ref3.instance;
+    return instance.value === 123;
+  }
+}].map(function (_ref4) {
+  var name = _ref4.name,
+      fn = _ref4.fn;
+  return test(name, fn);
+}).join("\n\n");
 
 /***/ }),
 /* 1 */
