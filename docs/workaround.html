@@ -9,12 +9,12 @@
 <body>
   <pre id="root"></pre>
   <script>
-/*
-copy from 
-    https://github.com/paulmillr/es6-shim
-    https://github.com/wesleytodd/setprototypeof
-    https://github.com/zloirock/core-js
-*/
+    /*
+    copy from 
+        https://github.com/paulmillr/es6-shim
+        https://github.com/wesleytodd/setprototypeof
+        https://github.com/zloirock/core-js
+    */
     (function () {
       if (Object.setPrototypeOf) return;
       var ObjectProto = Object.prototype;
@@ -46,11 +46,9 @@ copy from
           var copyDescriptors = function (target, source) {
             getOwnPropertyNames(source).forEach(function (key) {
               if (!has(target, key)) {
-                defineProperty(
-                  target,
-                  key,
-                  getOwnPropertyDescriptor(source, key)
-                );
+                var descriptor = getOwnPropertyDescriptor(source, key);
+                descriptor.configurable = true;
+                defineProperty(target, key, descriptor);
               }
             });
             return target;
@@ -76,7 +74,10 @@ copy from
           };
           return function mixinProperties(origin, proto) {
             Object.defineProperty(origin, "__proto__", {
-              value: proto
+              value: proto,
+              enumerable: false,
+              writable: true,
+              configurable: true
             });
             return copyDescriptors(origin, proto);
           };
